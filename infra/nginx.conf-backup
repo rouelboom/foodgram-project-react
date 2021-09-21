@@ -4,15 +4,6 @@ server {
         root /usr/share/nginx/html;
         try_files $uri $uri/redoc.html;
     }
-    location /backend/ {
-        root /var/html;
-    }
-    location /api/ {
-        proxy_pass http://backend:8000;
-    }
-    location /admin/ {
-        proxy_pass http://backend:8000;
-    }
 
     location / {
         root /usr/share/nginx/html;
