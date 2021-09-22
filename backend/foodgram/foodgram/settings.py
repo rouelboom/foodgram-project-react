@@ -26,8 +26,11 @@ SECRET_KEY = '218hc46!(%9w#8xdk+ix-5&nmj!ud*uiiz%6fv6!j6$e#z*&!o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
+EMAIL_ADMIN = 'from@example.com'
 
 # Application definition
 
