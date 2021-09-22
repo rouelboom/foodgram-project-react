@@ -39,23 +39,31 @@ class Recipe(models.Model):
                             null=True, verbose_name='Теги')
     description = models.TextField(blank=True, null=True,
                                    verbose_name='Описание')
-    cooking_time = models.PositiveIntegerField(verbose_name='Время приготовления')
-    image = models.ImageField(
-        upload_to='recipes/',
-        blank=True, null=True,
-        verbose_name='Изображение')
-    ingredient = models.(Ingredient,
-                                  on_delete=models.SET_NULL,
-                                  related_name='',
-                                  verbose_name='')
+    cooking_time = models.PositiveIntegerField(verbose_name=
+                                               'Время приготовления')
+    ingredient = models.ForeignKey(Ingredient,
+                                   on_delete=models.SET_NULL,
+                                   related_name='ingredients',
+                                   verbose_name='Ингредиенты')
 
     def __str__(self):
         return self.title
 
     class Meta:
         ordering = ['-pub_date']
-        verbose_name = 'Рецепты'
+        verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
 
+class Tag(models.Model):
+    """Тeг"""
+    title = models.CharField(max_length=150,
+                             verbose_name='Название')
+    color = models.CharField(max_length=25,
+                             verbose_name='Цвет(hex)')
+    slug = models.SlugField(verbose_name='Количество')
+
+    class Meta:
+        verbose_name = 'Тeг'
+        verbose_name_plural = 'Тeги'
 
