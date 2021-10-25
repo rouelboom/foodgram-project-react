@@ -1,3 +1,39 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import (FavoriteRecipe, Ingredient, Recipe,
+                     ShoppingCart, Tag)
+
+
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('author', 'title', 'description', 'cooking_time')
+    search_fields = ('title',)
+
+
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('title', 'measure')
+    search_fields = ('title',)
+
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('title', 'color', 'slug', 'id')
+    search_fields = ('title',)
+
+
+class AmountIngAdmin(admin.ModelAdmin):
+    list_display = ('recipes', 'ingredients', 'amount',)
+
+
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('recipes_shop', 'user')
+
+
+class FavoriteRecipeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe')
+
+
+admin.site.register(ShoppingCart, ShoppingCartAdmin)
+admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(Tag, TagAdmin)
+admin.site.register(Recipe, RecipeAdmin)
+# admin.site.register(IngredientAmount, AmountIngAdmin)
+admin.site.register(FavoriteRecipe, FavoriteRecipeAdmin)
