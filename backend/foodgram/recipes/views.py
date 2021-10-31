@@ -1,6 +1,6 @@
 import uuid
 
-from backend.foodgram.foodgram.settings import EMAIL_ADMIN
+from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
@@ -14,29 +14,24 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# from .filters import TitleFilter
-# from .models import Category, Genre, Review, Title, User, UserConfirmationCode
-# from .permissions import (IsAdminOrReadOnly, IsAuthorOrReadOnlyPermission,
-#                           IsSuperuserPermission)
-# from .serializers import (CategorySerializer, CommentViewSerializer,
-#                           EmailConfirmCodeSerializer, EmailSerializer,
-#                           GenreSerializer, ReviewViewSerializer,
-#                           TitleCreateSerializer, TitleGetSerializer,
-#                           UserSerializer)
+from .serializers import (RecipeViewSerializer, UserSerializer,
+                          EmailConfirmCodeSerializer)
+from .models import Recipe
 
-class CommentViewSet(viewsets.ModelViewSet):
-    serializer_class = CommentViewSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly,
-                          IsAuthorOrReadOnlyPermission]
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    serializer_class = RecipeViewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs['review_id'])
-        queryset = review.comments.all()
+        # recipe = get_object_or_404(Recipe, id=self.kwargs['recipe_id'])
+        queryset = Recipe.objects.all()
         return queryset
 
     def perform_create(self, serializer):
-        review = get_object_or_404(Review, id=self.kwargs['review_id'])
-        serializer.save(review=review, author=self.request.user)
+        # review = get_object_or_404(Recipe, id=self.kwargs['review_id'])
+        # serializer.save(review=review, author=self.request.user)
+        serializer.save()
 
 
 # class ReviewViewSet(viewsets.ModelViewSet):

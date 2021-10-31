@@ -33,17 +33,16 @@ class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='recipes', verbose_name='Автор')
     title = models.CharField(max_length=100, verbose_name='Название рецепта')
-    pub_date = models.DateTimeField(auto_now_add=True, erbose_name='Дата публикации')
+    pub_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
     tags = MultiSelectField(choices=TAG_CHOICES, blank=True,
                             null=True, verbose_name='Теги')
     description = models.TextField(blank=True, null=True,
                                    verbose_name='Описание')
     cooking_time = models.PositiveIntegerField(verbose_name=
                                                'Время приготовления')
-    ingredient = models.ForeignKey(Ingredient,
-                                   on_delete=models.SET_NULL,
-                                   related_name='ingredients',
-                                   verbose_name='Ингредиенты')
+    ingredients = models.ManyToManyField(
+        Ingredient, through="IngredientAmount"
+    )
     image = models.ImageField()
 
     def __str__(self):
@@ -103,5 +102,24 @@ class ShoppingCart(models.Model):
             models.UniqueConstraint(
                 fields=['user', 'recipes_shop'],
                 name='unique_shop_cart',
+            ),
+        ]
+
+
+class IngredientAmount(models.Model):
+    ingredients = models.ForeignKey(
+        Ingredient, on_delete=models.CASCADE, related_name="ingredient_amount"
+    )
+    recipes = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name="ingredient_amount")
+    amount = models.IntegerField(verbose_name="Кол-во")
+
+    class Meta:
+        verbose_name_plural = "Кол-во ингридиентов"
+        verbose_name = "Кол-во ингридиента"
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipes', 'ingredients'],
+                name='unique_ingredients',
             ),
         ]

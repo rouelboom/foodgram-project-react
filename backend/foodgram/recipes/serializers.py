@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
-from .fields import Base64ImageField
+# from .fields import Base64ImageField
 from .models import (FavoriteRecipe, Ingredient, IngredientAmount, Recipe,
                      ShoppingCart, Tag, User)
 
@@ -42,12 +42,12 @@ class IngredientViewSerializer(serializers.ModelSerializer):
     #                                               "one review for the title")
     #     return data
 
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        exclude = ('id',)
-        model = Category
-        lookup_field = 'slug'
+#
+# class CategorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         exclude = ('id',)
+#         model = Category
+#         lookup_field = 'slug'
 
 
 class EmailSerializer(serializers.Serializer):
