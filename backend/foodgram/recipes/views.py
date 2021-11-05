@@ -14,9 +14,10 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import (RecipeViewSerializer, UserSerializer,
+from .serializers import (RecipeViewSerializer, TagViewSerializer,
+                          UserSerializer, IngredientViewSerializer,
                           EmailConfirmCodeSerializer)
-from .models import Recipe
+from .models import Recipe, Tag, Ingredient
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -26,6 +27,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # recipe = get_object_or_404(Recipe, id=self.kwargs['recipe_id'])
         queryset = Recipe.objects.all()
+        # print(queryset)
         return queryset
 
     def perform_create(self, serializer):
@@ -34,23 +36,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save()
 
 
-# class ReviewViewSet(viewsets.ModelViewSet):
-#     serializer_class = ReviewViewSerializer
-#     permission_classes = [IsAuthenticatedOrReadOnly,
-#                           IsAuthorOrReadOnlyPermission]
-#     filter_backends = [filters.SearchFilter]
-#     search_fields = ['score', ]
-#
-#     def get_queryset(self):
-#         title = get_object_or_404(Title, id=self.kwargs['title_id'])
-#         queryset = title.reviews.all()
-#         return queryset
-#
-#     def perform_create(self, serializer):
-#         title = get_object_or_404(Title, id=self.kwargs['title_id'])
-#         serializer.save(title=title, author=self.request.user)
-#
-#
+class TagViewSet(viewsets.ModelViewSet):
+    serializer_class = TagViewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        # recipe = get_object_or_404(Recipe, id=self.kwargs['recipe_id'])
+        # if self.request.data
+        queryset = Tag.objects.all()
+        return queryset
+
+    def perform_create(self, serializer):
+        # review = get_object_or_404(Recipe, id=self.kwargs['review_id'])
+        # serializer.save(review=review, author=self.request.user)
+        serializer.save()
+
+
+class IngredientViewSet(viewsets.ModelViewSet):
+    serializer_class = IngredientViewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Ingredient.objects.all()
+        return queryset
+
+
 # class BaseViewSet(
 #     mixins.ListModelMixin,
 #     mixins.CreateModelMixin,

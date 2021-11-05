@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
+from django.utils.text import slugify
 
 from multiselectfield import MultiSelectField
 
@@ -14,9 +14,9 @@ TAG_CHOICES = (('breakfast', 'Завтрак'),
 
 class Ingredient(models.Model):
     """Ингредиенты"""
-    title = models.CharField(max_length=150,
+    name = models.CharField(max_length=150,
                              verbose_name='Название ингредиента')
-    measure = models.CharField(max_length=100,
+    measurement_unit = models.CharField(max_length=100,
                                verbose_name='Единица измерения')
     count = models.IntegerField(verbose_name='Количество')
 
@@ -32,7 +32,7 @@ class Recipe(models.Model):
     """Рецепты"""
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='recipes', verbose_name='Автор')
-    title = models.CharField(max_length=100, verbose_name='Название рецепта')
+    name = models.CharField(max_length=100, verbose_name='Название рецепта')
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
     tags = MultiSelectField(choices=TAG_CHOICES, blank=True,
                             null=True, verbose_name='Теги')
@@ -56,7 +56,7 @@ class Recipe(models.Model):
 
 class Tag(models.Model):
     """Тeг"""
-    title = models.CharField(max_length=150,
+    name = models.CharField(max_length=150,
                              verbose_name='Название')
     color = models.CharField(max_length=25,
                              verbose_name='Цвет(hex)')
@@ -66,6 +66,11 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тeг'
         verbose_name_plural = 'Тeги'
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super(Tag, self).save(*args, **kwargs)
 
 
 class FavoriteRecipe(models.Model):

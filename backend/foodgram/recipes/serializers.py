@@ -22,14 +22,15 @@ class RecipeViewSerializer(serializers.ModelSerializer):
 
 
 class IngredientViewSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username'
-    )
-
     class Meta:
         fields = '__all__'
         model = Ingredient
+
+
+class TagViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = Tag
         # depth = 1
 
     # def validate(self, data):

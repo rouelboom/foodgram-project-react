@@ -5,18 +5,18 @@ from .models import (FavoriteRecipe, Ingredient, Recipe,
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('author', 'title', 'description', 'cooking_time')
-    search_fields = ('title',)
+    list_display = ('author', 'name', 'description', 'cooking_time')
+    search_fields = ('name',)
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('title', 'measure')
-    search_fields = ('title',)
+    list_display = ('name', 'measurement_unit')
+    search_fields = ('name',)
 
 
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('title', 'color', 'slug', 'id')
-    search_fields = ('title',)
+    list_display = ('name', 'color', 'slug', 'id')
+    search_fields = ('name',)
 
 
 class AmountIngAdmin(admin.ModelAdmin):
