@@ -15,13 +15,13 @@ TAG_CHOICES = (('breakfast', 'Завтрак'),
 class Ingredient(models.Model):
     """Ингредиенты"""
     name = models.CharField(max_length=150,
-                             verbose_name='Название ингредиента')
+                            verbose_name='Название ингредиента')
     measurement_unit = models.CharField(max_length=100,
-                               verbose_name='Единица измерения')
-    count = models.IntegerField(verbose_name='Количество')
+                                        verbose_name='Единица измерения')
+    # amount = models.IntegerField(verbose_name='Количество')
 
     def __str__(self):
-        return f'{self.title} / {self.measure}'
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -34,10 +34,11 @@ class Recipe(models.Model):
                                related_name='recipes', verbose_name='Автор')
     name = models.CharField(max_length=100, verbose_name='Название рецепта')
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
-    tags = MultiSelectField(choices=TAG_CHOICES, blank=True,
-                            null=True, verbose_name='Теги')
-    description = models.TextField(blank=True, null=True,
-                                   verbose_name='Описание')
+    # tags = MultiSelectField(choices=TAG_CHOICES, blank=True,
+    #                         null=True, verbose_name='Теги')
+    tags = models.ManyToManyField("Tag")
+    text = models.TextField(blank=True, null=True,
+                            verbose_name='Описание')
     cooking_time = models.PositiveIntegerField(verbose_name=
                                                'Время приготовления')
     ingredients = models.ManyToManyField(
@@ -46,7 +47,7 @@ class Recipe(models.Model):
     image = models.ImageField()
 
     def __str__(self):
-        return self.title
+        return self.name
 
     class Meta:
         ordering = ['-pub_date']

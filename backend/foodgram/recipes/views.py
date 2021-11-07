@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
+from django.contrib.auth import get_user_model
 from django_filters import rest_framework as dfilters
 from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -17,7 +18,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (RecipeViewSerializer, TagViewSerializer,
                           UserSerializer, IngredientViewSerializer,
                           EmailConfirmCodeSerializer)
-from .models import Recipe, Tag, Ingredient
+from .models import Recipe, Tag, Ingredient, IngredientAmount
+User = get_user_model()
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -27,13 +29,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # recipe = get_object_or_404(Recipe, id=self.kwargs['recipe_id'])
         queryset = Recipe.objects.all()
-        # print(queryset)
+        for query in queryset:
+            # print(query.author)
+            user = get_object_or_404(User, username=query.author)
+
+            # current_user = User.objects.filter(name=query.author)
+            # print(user)
+            # print(user.email)
+        print(queryset.values()[1])
         return queryset
 
     def perform_create(self, serializer):
-        # review = get_object_or_404(Recipe, id=self.kwargs['review_id'])
-        # serializer.save(review=review, author=self.request.user)
-        serializer.save()
+
+        recipe = serializer.save(author=self.request.user)
+
+        ingredients_ = []
+        for ingredient in self.request.data['ingredients']:
+            print(ingredient)
+            ingredient_object = get_object_or_404(Ingredient, id=ingredient['id'])
+            ingredients_.append(ingredient_object)
+            IngredientAmount.objects.create(ingredients=ingredient_object,
+                                            amount=ingredient['amount'],
+                                            recipes=recipe)
 
 
 class TagViewSet(viewsets.ModelViewSet):

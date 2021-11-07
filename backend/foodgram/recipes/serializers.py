@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
+from .common_handlers import Base64ImageField
 # from .fields import Base64ImageField
 from .models import (FavoriteRecipe, Ingredient, IngredientAmount, Recipe,
                      ShoppingCart, Tag, User)
@@ -10,6 +11,7 @@ from .models import Recipe, Ingredient, Tag, User
 
 
 class RecipeViewSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(max_length=None, use_url=True,)
     author = serializers.SlugRelatedField(
         read_only=True,
         slug_field='username'
@@ -25,6 +27,12 @@ class IngredientViewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Ingredient
+
+
+class IngredientAmountSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = IngredientAmount
 
 
 class TagViewSerializer(serializers.ModelSerializer):

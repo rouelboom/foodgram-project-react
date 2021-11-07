@@ -1,11 +1,11 @@
 from django.contrib import admin
 
 from .models import (FavoriteRecipe, Ingredient, Recipe,
-                     ShoppingCart, Tag)
+                     ShoppingCart, Tag, IngredientAmount)
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('author', 'name', 'description', 'cooking_time')
+    list_display = ('author', 'name', 'text', 'cooking_time', 'image')
     search_fields = ('name',)
 
 
@@ -35,5 +35,5 @@ admin.site.register(ShoppingCart, ShoppingCartAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-# admin.site.register(IngredientAmount, AmountIngAdmin)
+admin.site.register(IngredientAmount, AmountIngAdmin)
 admin.site.register(FavoriteRecipe, FavoriteRecipeAdmin)
