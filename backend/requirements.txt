@@ -41,3 +41,4 @@ psycopg2-binary==2.8.5
 djoser
 django-multiselectfield
 Pillow
+django-colorfield

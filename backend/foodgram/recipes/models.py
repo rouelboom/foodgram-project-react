@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
+from colorfield.fields import ColorField
 
-from multiselectfield import MultiSelectField
 
 User = get_user_model()
 
@@ -31,9 +31,12 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     """Рецепты"""
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='recipes', verbose_name='Автор')
-    name = models.CharField(max_length=100, verbose_name='Название рецепта')
-    pub_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
+                               related_name='recipes',
+                               verbose_name='Автор')
+    name = models.CharField(max_length=100,
+                            verbose_name='Название рецепта')
+    pub_date = models.DateTimeField(auto_now_add=True,
+                                    verbose_name='Дата публикации')
     # tags = MultiSelectField(choices=TAG_CHOICES, blank=True,
     #                         null=True, verbose_name='Теги')
     tags = models.ManyToManyField("Tag")
@@ -59,7 +62,7 @@ class Tag(models.Model):
     """Тeг"""
     name = models.CharField(max_length=150,
                              verbose_name='Название')
-    color = models.CharField(max_length=25,
+    color = ColorField(default='#FF0000',
                              verbose_name='Цвет(hex)')
     slug = models.fields.SlugField(unique=True, max_length=200,
                                    verbose_name="Уникальный адрес")
