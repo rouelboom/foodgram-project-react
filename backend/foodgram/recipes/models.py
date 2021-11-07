@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
+from django.utils.text import slugify
+from colorfield.fields import ColorField
 
-from multiselectfield import MultiSelectField
 
 User = get_user_model()
 
@@ -14,14 +14,14 @@ TAG_CHOICES = (('breakfast', 'Завтрак'),
 
 class Ingredient(models.Model):
     """Ингредиенты"""
-    title = models.CharField(max_length=150,
-                             verbose_name='Название ингредиента')
-    measure = models.CharField(max_length=100,
-                               verbose_name='Единица измерения')
-    count = models.IntegerField(verbose_name='Количество')
+    name = models.CharField(max_length=150,
+                            verbose_name='Название ингредиента')
+    measurement_unit = models.CharField(max_length=100,
+                                        verbose_name='Единица измерения')
+    # amount = models.IntegerField(verbose_name='Количество')
 
     def __str__(self):
-        return f'{self.title} / {self.measure}'
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -31,23 +31,26 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     """Рецепты"""
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='recipes', verbose_name='Автор')
-    title = models.CharField(max_length=100, verbose_name='Название рецепта')
-    pub_date = models.DateTimeField(auto_now_add=True, erbose_name='Дата публикации')
-    tags = MultiSelectField(choices=TAG_CHOICES, blank=True,
-                            null=True, verbose_name='Теги')
-    description = models.TextField(blank=True, null=True,
-                                   verbose_name='Описание')
+                               related_name='recipes',
+                               verbose_name='Автор')
+    name = models.CharField(max_length=100,
+                            verbose_name='Название рецепта')
+    pub_date = models.DateTimeField(auto_now_add=True,
+                                    verbose_name='Дата публикации')
+    # tags = MultiSelectField(choices=TAG_CHOICES, blank=True,
+    #                         null=True, verbose_name='Теги')
+    tags = models.ManyToManyField("Tag")
+    text = models.TextField(blank=True, null=True,
+                            verbose_name='Описание')
     cooking_time = models.PositiveIntegerField(verbose_name=
                                                'Время приготовления')
-    ingredient = models.ForeignKey(Ingredient,
-                                   on_delete=models.SET_NULL,
-                                   related_name='ingredients',
-                                   verbose_name='Ингредиенты')
+    ingredients = models.ManyToManyField(
+        Ingredient, through="IngredientAmount"
+    )
     image = models.ImageField()
 
     def __str__(self):
-        return self.title
+        return self.name
 
     class Meta:
         ordering = ['-pub_date']
@@ -57,9 +60,9 @@ class Recipe(models.Model):
 
 class Tag(models.Model):
     """Тeг"""
-    title = models.CharField(max_length=150,
+    name = models.CharField(max_length=150,
                              verbose_name='Название')
-    color = models.CharField(max_length=25,
+    color = ColorField(default='#FF0000',
                              verbose_name='Цвет(hex)')
     slug = models.fields.SlugField(unique=True, max_length=200,
                                    verbose_name="Уникальный адрес")
@@ -67,6 +70,11 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тeг'
         verbose_name_plural = 'Тeги'
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super(Tag, self).save(*args, **kwargs)
 
 
 class FavoriteRecipe(models.Model):
@@ -103,5 +111,24 @@ class ShoppingCart(models.Model):
             models.UniqueConstraint(
                 fields=['user', 'recipes_shop'],
                 name='unique_shop_cart',
+            ),
+        ]
+
+
+class IngredientAmount(models.Model):
+    ingredients = models.ForeignKey(
+        Ingredient, on_delete=models.CASCADE, related_name="ingredient_amount"
+    )
+    recipes = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name="ingredient_amount")
+    amount = models.IntegerField(verbose_name="Кол-во")
+
+    class Meta:
+        verbose_name_plural = "Кол-во ингридиентов"
+        verbose_name = "Кол-во ингридиента"
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipes', 'ingredients'],
+                name='unique_ingredients',
             ),
         ]
