@@ -155,7 +155,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         try:
             return FavoriteRecipe.objects.filter(
                 user=self.context['request'].user.id, recipe=obj.id).exists()
-        except KeyError as e:
+        except KeyError:
             return Response({'detail': 'request key not found'},
                             status=status.HTTP_400_BAD_REQUEST)
 
@@ -163,7 +163,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         try:
             return ShoppingCart.objects.filter(
                 user=self.context['request'].user.id, recipes_shop=obj.id).exists()
-        except KeyError as e:
+        except KeyError:
             return Response({'detail': 'request key not found'},
                             status=status.HTTP_400_BAD_REQUEST)
 

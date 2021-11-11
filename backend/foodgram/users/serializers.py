@@ -1,10 +1,12 @@
 from django.contrib.auth import get_user_model
 from djoser.conf import settings
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 
 from recipes.models import Recipe
 from users.models import Subscription
+from .utils import get_recipes, get_recipes_count
 
 User = get_user_model()
 
@@ -28,7 +30,11 @@ class CustomUserSerializer(UserSerializer):
     def get_is_subscribed(self, obj):
         if not self.context:
             return True
-        user = self.context['request'].user.id
+        try:
+            user = self.context['request'].user.id
+        except KeyError:
+            return Response({'detail': 'request key not found'},
+                            status=status.HTTP_400_BAD_REQUEST)
         return Subscription.objects.filter(user=user, follow=obj.id).exists()
 
 
@@ -54,11 +60,6 @@ class SubscribeRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'image', 'cooking_time')
         model = Recipe
-
-
-def get_recipes(obj):
-    serializer = SubscribeRecipeSerializer(obj, many=True)
-    return serializer.data
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
@@ -90,10 +91,6 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return result
 
 
-def get_recipes_count(obj):
-    return len(Recipe.objects.filter(author=obj))
-
-
 class SubscriptionSerializer(serializers.ModelSerializer):
     recipes_count = serializers.SerializerMethodField()
 
@@ -105,12 +102,16 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         follow = CustomUserSerializer(instance.follow).data
         recipes = get_recipes(Recipe.objects.filter(
             author=instance.follow))
-        if self.context['request'].query_params.get(
-                'recipes_limit'):
-            recipes_limit = self.context['request'].query_params.get(
-                'recipes_limit')
-            recipes = get_recipes(Recipe.objects.filter(
-                author=instance.follow)[:int(recipes_limit)])
+        try:
+            if self.context['request'].query_params.get(
+                    'recipes_limit'):
+                recipes_limit = self.context['request'].query_params.get(
+                    'recipes_limit')
+                recipes = get_recipes(Recipe.objects.filter(
+                    author=instance.follow)[:int(recipes_limit)])
+        except KeyError:
+            return Response({'detail': 'request key not found'},
+                            status=status.HTTP_400_BAD_REQUEST)
         recipe_count = get_recipes_count(instance.follow)
         result = follow
         result['recipes'] = recipes
