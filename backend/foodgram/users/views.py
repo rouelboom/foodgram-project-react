@@ -50,34 +50,34 @@ class CustomUserViewSet(UserViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        ["post"], detail=False,
-        url_path="reset_{}_confirm".format(User.USERNAME_FIELD)
+        ['post'], detail=False,
+        url_path='reset_{}_confirm'.format(User.USERNAME_FIELD)
     )
     def reset_username_confirm(self, request, *args, **kwargs):
         raise ValidationError({'error': 'Недоступно'})
 
-    @action(["post"], detail=False,
-            url_path="reset_{}".format(User.USERNAME_FIELD))
+    @action(['post'], detail=False,
+            url_path='reset_{}'.format(User.USERNAME_FIELD))
     def reset_username(self, request, *args, **kwargs):
         raise ValidationError({'error': 'Недоступно'})
 
-    @action(["post"], detail=False,
-            url_path="set_{}".format(User.USERNAME_FIELD))
+    @action(['post'], detail=False,
+            url_path='set_{}'.format(User.USERNAME_FIELD))
     def set_username(self, request, *args, **kwargs):
         raise ValidationError({'error': 'Недоступно'})
 
-    @action(["post"], detail=False)
+    @action(['post'], detail=False)
     def reset_password_confirm(self, request, *args, **kwargs):
         raise ValidationError({'error': 'Недоступно'})
 
-    @action(["post"], detail=False)
+    @action(['post'], detail=False)
     def reset_password(self, request, *args, **kwargs):
         raise ValidationError({'error': 'Недоступно'})
 
-    @action(["post"], detail=False)
+    @action(['post'], detail=False)
     def resend_activation(self, request, *args, **kwargs):
         raise ValidationError({'error': 'Недоступно'})
 
-    @action(["post"], detail=False)
+    @action(['post'], detail=False)
     def activation(self, request, *args, **kwargs):
         raise ValidationError({'error': 'Недоступно'})

@@ -6,9 +6,9 @@ User = get_user_model()
 
 class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name="follower")
+                             related_name='follower')
     follow = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name="following")
+                               related_name='following')
     constraints = [
         models.UniqueConstraint(
             fields=['user', 'follow'],

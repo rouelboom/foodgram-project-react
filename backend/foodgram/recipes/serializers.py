@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
+
 
 from users.serializers import CustomUserSerializer
 from .common_handlers import Base64ImageField
@@ -58,13 +60,16 @@ class RecipeSerializer(serializers.ModelSerializer):
                   )
 
     def validate(self, data):
-        if data['cooking_time'] < 1:
-            raise serializers.ValidationError(
-                {'name': 'Нереально так быстро приготовить!'})
         if Recipe.objects.filter(name=data['name']) and (
                 self.context['request'].method == 'POST'):
             raise serializers.ValidationError(
                 'Рецепт с таким именем уже есть!')
+        return data
+
+    def validate_cooking_time(self, data):
+        if data['cooking_time'] < 1:
+            raise serializers.ValidationError(
+                {'name': 'Нереально так быстро приготовить!'})
         return data
 
     def validate_ingredients(self, data):
@@ -118,6 +123,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
+        super().to_representation()
         ingredients = validated_data.pop('ingredient_amount')
         instance.name = validated_data['name']
         instance.text = validated_data['text']
@@ -146,12 +152,21 @@ class RecipeGetSerializer(serializers.ModelSerializer):
                   )
 
     def get_is_favorited(self, obj):
-        return FavoriteRecipe.objects.filter(
-            user=self.context['request'].user.id, recipe=obj.id).exists()
+        try:
+            return FavoriteRecipe.objects.filter(
+                user=self.context['request'].user.id, recipe=obj.id).exists()
+        except KeyError as e:
+            return Response({'detail': 'request key not found'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def get_is_in_shopping_cart(self, obj):
-        return ShoppingCart.objects.filter(
-            user=self.context['request'].user.id, recipes_shop=obj.id).exists()
+        try:
+            return ShoppingCart.objects.filter(
+                user=self.context['request'].user.id, recipes_shop=obj.id).exists()
+        except KeyError as e:
+            return Response({'detail': 'request key not found'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
@@ -167,7 +182,7 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
         if FavoriteRecipe.objects.filter(
                 user=data['user'], recipe=data['recipe']).exists():
             raise serializers.ValidationError(
-                'Вы уже добаили рецепт в избранное!')
+                'Вы уже добавили рецепт в избранное!')
         return data
 
     class Meta:

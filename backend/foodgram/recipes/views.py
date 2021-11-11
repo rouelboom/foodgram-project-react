@@ -63,14 +63,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        recipe_follow = FavoriteRecipe.objects.filter(
+        recipe_follow_exist = FavoriteRecipe.objects.filter(
             user=user,
-            recipe=recipe)
-        if not recipe_follow:
+            recipe=recipe).exist()
+        if not recipe_follow_exist:
             return Response({
                 'errors': 'Вы не добавляли этот рецепт!'
             }, status=status.HTTP_400_BAD_REQUEST)
-        recipe_follow.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['GET', 'DELETE'],
@@ -86,13 +85,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        recipe_follow = ShoppingCart.objects.filter(
-            user=user, recipes_shop=recipe)
-        if not recipe_follow:
+        recipe_follow_exist = ShoppingCart.objects.filter(
+            user=user, recipes_shop=recipe).exist()
+        if not recipe_follow_exist:
             return Response({
                 'errors': 'Вы не добавляли этот рецепт в список покупок.'
             }, status=status.HTTP_400_BAD_REQUEST)
-        recipe_follow.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False)
