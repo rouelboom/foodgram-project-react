@@ -6,11 +6,6 @@ from colorfield.fields import ColorField
 
 User = get_user_model()
 
-# Возможные варианты выбора для поля tags
-TAG_CHOICES = (('breakfast', 'Завтрак'),
-               ('lunch', 'Обед'),
-               ('dinner', 'Ужин'))
-
 
 class Ingredient(models.Model):
     """Ингредиенты"""
