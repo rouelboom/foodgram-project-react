@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from recipes.models import Recipe
 from users.models import Subscription
-from .utils import get_recipes, get_recipes_count
+# from .utils import get_recipes, get_recipes_count
 
 User = get_user_model()
 
@@ -60,6 +60,15 @@ class SubscribeRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'image', 'cooking_time')
         model = Recipe
+
+
+def get_recipes(obj):
+    serializer = SubscribeRecipeSerializer(obj, many=True)
+    return serializer.data
+
+
+def get_recipes_count(obj):
+    return Recipe.objects.filter(author=obj).count()
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
