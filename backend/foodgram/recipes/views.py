@@ -65,13 +65,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        recipe_follow_exist = FavoriteRecipe.objects.filter(
+        recipe_follow = FavoriteRecipe.objects.filter(
             user=user,
-            recipe=recipe).exist()
-        if not recipe_follow_exist:
+            recipe=recipe)
+        if not recipe_follow:
             return Response({
                 'errors': 'Вы не добавляли этот рецепт!'
             }, status=status.HTTP_400_BAD_REQUEST)
+        recipe_follow.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['GET', 'DELETE'],
