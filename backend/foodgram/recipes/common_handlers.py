@@ -22,7 +22,7 @@ class Base64ImageField(serializers.ImageField):
             data = ContentFile(decoded_file, name=complete_file_name)
         return super().to_internal_value(data)
 
-    def get_file_extension(file_name, decoded_file):
+    def get_file_extension(self, file_name, decoded_file):
         extension = imghdr.what(file_name, decoded_file)
         extension = 'jpg' if extension == 'jpeg' else extension
         return extension
