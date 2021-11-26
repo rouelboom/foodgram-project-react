@@ -24,6 +24,7 @@ jobs:
           uses: docker/build-push-action@v2
           with:
             push: true
+            dockerfile: ./backend/foodgram/Dockerfile
             tags: rouelboom/foodgram:latest
   deploy:
       runs-on: ubuntu-latest
