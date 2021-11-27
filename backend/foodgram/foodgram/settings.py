@@ -2,9 +2,9 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['51.250.2.131', 'localhost']
 
 EMAIL_ADMIN = 'from@example.com'
 
@@ -62,8 +62,7 @@ DATABASES = {
         'NAME': os.environ.get('DB_NAME', default='postgres'),
         'USER': os.environ.get('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', default='postgres'),
-        # 'HOST': os.environ.get('DB_HOST', default='db'), will be uncommented after using docker db
-        'HOST': os.environ.get('DB_HOST', default='localhost'),
+        'HOST': os.environ.get('DB_HOST', default='db'),
         'PORT': os.environ.get('DB_PORT', default='5432')
     }
 }
