@@ -19,7 +19,7 @@ services:
       - ../frontend/:/app/result_build/
 
   backend:
-    image: rouelboom/foodgram:v1.0
+    image: rouelboom/foodgram:latest
     restart: always
     depends_on:
       - db
