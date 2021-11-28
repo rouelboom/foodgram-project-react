@@ -88,12 +88,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        recipe_follow_exist = ShoppingCart.objects.filter(
-            user=user, recipes_shop=recipe).exist()
-        if not recipe_follow_exist:
+        recipe_in_cart = ShoppingCart.objects.filter(
+            user=user, recipes_shop=recipe)
+        if not recipe_in_cart:
             return Response({
                 'errors': 'Вы не добавляли этот рецепт в список покупок.'
             }, status=status.HTTP_400_BAD_REQUEST)
+        recipe_in_cart.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False)
